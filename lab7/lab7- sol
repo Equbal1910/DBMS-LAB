@@ -1,1 +1,154 @@
+SELECT Name 
+FROM student 
+WHERE Department_ID = ( 
+	SELECT Department_ID 
+    FROM student
+    WHERE Student_ID = 'S401'
+);
+
+SELECT Name 
+FROM student
+WHERE Gender = (
+	SELECT Gender
+    FROM student
+    WHERE Student_ID = 'S402'
+);
+
+SELECT Name 
+FROM student 
+WHERE Department_ID = ( 
+	SELECT Department_ID 
+    FROM student
+    WHERE Student_ID = 'S403'
+);
+
+-- Part B
+
+SELECT Name
+FROM student
+WHERE Department_ID IN (
+    SELECT Department_ID
+    FROM student
+    WHERE Gender = 'Female'
+);
+
+SELECT Name
+FROM Student
+WHERE Student_ID IN (
+    SELECT Student_ID
+    FROM Enrollment
+);
+
+SELECT Name
+FROM student
+WHERE Student_ID IN (
+    SELECT Student_ID
+    FROM Enrollment
+);
+
+-- Part C
+
+-- Courses with credits more than average
+SELECT Course_Name
+FROM course
+WHERE Credits > (
+    SELECT AVG(Credits)
+    FROM Course
+);
+
+-- Students with ID greater than average ID
+SELECT Name
+FROM student
+WHERE Student_ID > (
+    SELECT AVG(Student_ID)
+    FROM student
+);
+
+-- Departments with more students than average
+SELECT Department_ID
+FROM Student
+GROUP BY Department_ID
+HAVING COUNT(*) > (
+    SELECT AVG(StudentCount)
+    FROM (
+        SELECT COUNT(*) AS StudentCount
+        FROM Student
+        GROUP BY Department_ID
+    ) AS Temp
+);
+
+-- part D 
+-- Students who are enrolled in at least one course
+SELECT Name
+FROM Student
+WHERE Student_ID IN (
+    SELECT Student_ID
+    FROM Enrollment
+);
+
+-- Students who have a department assigned
+SELECT Name
+FROM Student
+WHERE Department_ID IN (
+    SELECT Department_ID
+    FROM Student
+);
+
+-- Courses with at least one enrollment
+SELECT Course_Name
+FROM Course
+WHERE Course_ID IN (
+    SELECT Course_ID
+    FROM Enrollment
+);
+
+-- Part E
+SELECT *
+FROM Course
+WHERE credits = (SELECT MAX(credits) FROM Course);
+
+SELECT s.Student_id, s.Name
+FROM Student s
+JOIN Enrollment e ON s.Student_id = e.Student_id
+GROUP BY s.Student_id, s.Name
+HAVING COUNT(e.Course_id) > 1;
+
+SELECT d.Department_id, d.Department_Name
+FROM Department d
+JOIN Student s ON d.Department_id = s.Department_id
+GROUP BY d.Department_id, d.Department_Name
+HAVING COUNT(s.Student_id) = (
+    SELECT MAX(Student_count)
+    FROM (
+        SELECT COUNT(Student_ID) AS Student_count
+        FROM Student
+        GROUP BY Department_ID
+    ) AS dept_counts
+);
+
+-- part F
+
+SELECT DISTINCT s.Student_id, s.name
+FROM Student s
+JOIN Enrollment e ON s.Student_id = e.Student_id
+WHERE e.Course_id IN (
+    SELECT Course_id
+    FROM Enrollment
+    WHERE student_id = 'S401'
+)
+AND s.student_id <> 'S401';
+
+SELECT *
+FROM Student s
+WHERE s.Student_id NOT IN (
+    SELECT student_id
+    FROM Enrollment
+);
+
+SELECT *
+FROM Course c
+WHERE c.Course_id NOT IN (
+    SELECT Course_id
+    FROM Enrollment
+);
 
